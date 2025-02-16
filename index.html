@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Waste Sorting</title>
+</head>
+<body style="text-align:center; font-family:Arial;">
+  <h1>Sort Your Waste</h1>
+  <p>Upload a photo of your waste item to find out if it's recyclable!</p>
+  <input type="file" id="file-input" accept="image/*" />
+  <p id="result"></p>
+
+  <script>
+    const modelURL = "https://teachablemachine.withgoogle.com/models/zK3R0JZBW/";
+
+    document.getElementById('file-input').addEventListener('change', async function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async function () {
+          const response = await fetch(modelURL, {
+            method: 'POST',
+            body: JSON.stringify({ image: reader.result }),
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const result = await response.json();
+          document.getElementById('result').innerText = result.label;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
